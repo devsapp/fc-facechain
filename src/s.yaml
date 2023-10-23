@@ -90,16 +90,3 @@ services:
         cpu: 8
         memorySize: 32768
         gpuMemorySize: 16384
-      triggers:
-        - name: defaultTrigger
-          description: ''
-          type: http
-          qualifier: LATEST
-          config:
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            authType: anonymous
-            disableURLInternet: false
