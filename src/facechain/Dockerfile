@@ -19,5 +19,7 @@ ENV GRADIO_SERVER_NAME=0.0.0.0
 
 COPY ./entrypoint.sh /entrypoint.sh
 
+RUN apt update && apt install -y curl
+COPY ./initial.sh ./aria2c /initial/
 
 ENTRYPOINT [ "/entrypoint.sh" ]

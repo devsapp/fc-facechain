@@ -1,8 +1,12 @@
 name: publish package to serverless-hub
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
+      - main
+      - dev
+      - 'dev/**'
 
 jobs:
   deploy:
@@ -31,10 +35,6 @@ jobs:
       - name: Publish package
         env:
           publish_token: ${{ secrets.alibaba_registry_publish_token }}
-          release_body: ${{ github.event.release.body }}
-          release_name: ${{ github.event.release.name }}
         run: |
-          TAG=$(git describe --tags --always)
-          echo "release ${TAG}"
-          sed -i "s/Version: .*/Version: ${TAG}/" publish.yaml 
+          sed -i 's/Version: .*/Version: dev/' publish.yaml 
           python hub-publish.py

@@ -5,7 +5,7 @@ help: ## 帮助文件
 .PHONY: FORCE
 FORCE:
 
-IMAGE_DIR=src/code/facechain
+IMAGE_DIR=src/facechain
 NAMESPACE=aliyun-fc
 REPO=fc-facechain
 VERSION=v1
@@ -52,5 +52,7 @@ push-nas: ## 推送 nas 文件
 	echo done
 
 test-deploy: ## 直接执行 s deploy
-	cd src && \
-	s deploy --skip-push --use-local
+	@cd src && \
+	cat s.yaml | sed 's/{{[^}]*}}//g' > s-pre.yaml && \
+	s deploy -t s-pre.yaml --skip-push --use-local && \
+	rm s-pre.yaml

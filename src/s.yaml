@@ -2,6 +2,7 @@ edition: 1.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic V
 name: fc-stable-diffusion
 access: default
 vars:
+  enableSLS: "{{ enableSLS }}"
   imageUrl: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-facechain:v1
   region: cn-shanghai
   service:
@@ -9,7 +10,7 @@ vars:
     description: 'facechain 部署到函数计算'
     internetAccess: true
     nasConfig: auto
-    # logConfig: auto
+    {{ if enableSLS === true }}logConfig: auto{{ /if }}
 
 services:
   facechain:
@@ -75,20 +76,17 @@ services:
         timeout: 3600
         diskSize: 512
         codeUri: './initial'
-        runtime: python3.9
-        cpu: 16
-        instanceConcurrency: 100
+        runtime: custom-container
+        # cpu: 16
+        instanceConcurrency: 1
+        # memorySize: 32768
+        instanceType: fc.gpu.tesla.1
+        customContainerConfig:
+          args: ''
+          accelerationType: Default
+          image: ${vars.imageUrl}
+          command: '["/initial/initial.sh"]'
+          webServerMode: false
+        cpu: 8
         memorySize: 32768
-      triggers:
-        - name: defaultTrigger
-          description: ''
-          type: http
-          qualifier: LATEST
-          config:
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            authType: anonymous
-            disableURLInternet: false
+        gpuMemorySize: 16384
