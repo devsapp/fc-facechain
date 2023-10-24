@@ -2,7 +2,6 @@ edition: 1.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic V
 name: fc-stable-diffusion
 access: default
 vars:
-  enableSLS: "{{ enableSLS }}"
   imageUrl: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-facechain:v1
   region: cn-shanghai
   service:
@@ -24,10 +23,10 @@ services:
         name: facechain
         description: facechain 函数
         handler: index.handler
-        timeout: 600
+        timeout: 3600
         diskSize: 512
         caPort: 7860
-        instanceType: fc.gpu.tesla.1
+        instanceType: fc.gpu.ampere.1
         runtime: custom-container
         cpu: 8
         customContainerConfig:
@@ -40,9 +39,10 @@ services:
           webServerMode: true
         instanceConcurrency: 100
         memorySize: 32768
-        gpuMemorySize: 16384
+        gpuMemorySize: 24576
         asyncConfiguration: {}
         environmentVariables:
+          TRANSFORMERS_OFFLINE: 1
       triggers:
         - name: defaultTrigger
           description: ''
