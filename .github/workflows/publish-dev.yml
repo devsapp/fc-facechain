@@ -1,4 +1,4 @@
-name: publish package to serverless-hub
+name: release dev version to serverless-hub
 
 on:
   push:
