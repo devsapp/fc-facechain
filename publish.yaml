@@ -1,13 +1,16 @@
-Type: Application
-Name: fc-facechain
+Edition: 3.0.0
+Type: Project
+Name: fc-facechain-v3
 Provider:
   - 阿里云 
-Version: dev
+Version: dev.0.1
 Description: 在阿里云函数计算（FC）部署 facechain
 HomePage: https://github.com/devsapp/fc-facechain
 Tags: 
   - 部署函数
 Category: Web框架
+Organization: 阿里云函数计算（FC）
+Effective: Public
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性

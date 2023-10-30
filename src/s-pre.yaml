@@ -4,7 +4,7 @@ access: default
 vars:
   imageUrl: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-facechain:v1
   region: cn-shanghai
-  namespace: facechain # {{ namespace }}
+  namespace: facechain # 
 
 resources:
   facechain:
@@ -27,7 +27,7 @@ resources:
       memorySize: 32768
       gpuMemorySize: 24576
       nasConfig: auto
-      {{ if enableSLS === true }}logConfig: auto{{ /if }}
+      logConfig: auto
       environmentVariables:
         TRANSFORMERS_OFFLINE: 1
   initial:
@@ -45,7 +45,7 @@ resources:
       codeUri: './initial'
       runtime: custom-container
       nasConfig: ${resources.facechain.output.nasConfig}
-      {{ if enableSLS === true }}logConfig: auto{{ /if }}
+      logConfig: auto
       # cpu: 16
       # memorySize: 32768
       instanceConcurrency: 1
