@@ -1,14 +1,14 @@
 edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
-name: fc-stable-diffusion
+name: fc-facechain-v3
 access: default
 vars:
-  imageUrl: registry.cn-shanghai.aliyuncs.com/aliyun-fc/fc-facechain:v1
-  region: cn-shanghai
-  namespace: facechain # {{ namespace }}
+  imageUrl: registry.{{region}}.aliyuncs.com/aliyun-fc/fc-facechain:v2
+  region: "{{region}}"
+  namespace: "{{namespace}}"
 
 resources:
   facechain:
-    component: fc3
+    component: fc3@dev
     props:
       region: ${vars.region}
       functionName: "${vars.namespace}-server"
@@ -20,21 +20,30 @@ resources:
       instanceType: fc.gpu.ampere.1
       runtime: custom-container
       cpu: 8
+      memorySize: 32768
+      gpuConfig:
+        gpuMemorySize: 24576
+        gpuType: fc.gpu.ampere.1
       customContainerConfig:
         image: ${vars.imageUrl}
         port: 7860
+        entrypoint: 
+          - /entrypoint.sh
       instanceConcurrency: 100
-      memorySize: 32768
-      gpuMemorySize: 24576
+      vpcConfig: auto
       nasConfig: auto
       {{ if enableSLS === true }}logConfig: auto{{ /if }}
       environmentVariables:
-        TRANSFORMERS_OFFLINE: 1
+        TRANSFORMERS_OFFLINE: "1"
+
   initial:
-    component: fc3
+    component: fc3@dev
     actions: 
-      post-deploy:
-        - component: fc3 invoke --function ${this.props.functionName} 
+      success-deploy:
+        # - component: fc3 invoke
+        - run: |
+            s cli fc3 invoke --region ${this.props.region} --function-name ${this.props.functionName} --timeout 1200
+          path: ./
     props:
       region: ${vars.region}
       functionName: "${vars.namespace}-init"
@@ -44,21 +53,26 @@ resources:
       diskSize: 512
       codeUri: './initial'
       runtime: custom-container
+      vpcConfig: ${resources.facechain.output.vpcConfig}
       nasConfig: ${resources.facechain.output.nasConfig}
       {{ if enableSLS === true }}logConfig: auto{{ /if }}
-      # cpu: 16
-      # memorySize: 32768
       instanceConcurrency: 1
-      instanceType: fc.gpu.tesla.1
-      customContainerConfig:
-        image: ${vars.imageUrl}
-        port: 7860
-        entrypoint:
-          - initial/initial.sh
-        webServerMode: false
       cpu: 8
       memorySize: 32768
+      gpuConfig:
+        gpuMemorySize: 16384
+        gpuType: fc.gpu.tesla.1
+      customContainerConfig:
+        image: ${vars.imageUrl}
+        port: 9000
+        entrypoint:
+          - python3
+        command:
+          - /initial/main.py
+        webServerMode: false
       gpuMemorySize: 16384
+      environmentVariables:
+        NAS_ROOT: "/mnt/${resources.facechain.props.functionName}"
 
   custom-domain:
     component: fc3-domain

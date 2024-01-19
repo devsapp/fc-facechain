@@ -20,7 +20,7 @@ function mount_file() {
 }
 
 
-NAS_DIR="/mnt/auto/facechain"
+NAS_DIR="/mnt/${FC_FUNCTION_NAME}/facechain"
 ROOT="/facechain"
 
 declare -A MOUNTS

@@ -8,7 +8,8 @@ FORCE:
 IMAGE_DIR=src/facechain
 NAMESPACE=aliyun-fc
 REPO=fc-facechain
-VERSION=v1
+VERSION=v2
+OSS_PREFIX=facechain/${VERSION}
 CACHE_DIR=nas/facechain
 FILE_LIST=dist/files.list
 
@@ -16,13 +17,23 @@ FILE_LIST=dist/files.list
 build: ${IMAGE_DIR}/Dockerfile ${IMAGE_DIR}/entrypoint.sh ## 构建镜像
 	DOCKER_BUILDKIT=1 docker build -f ${IMAGE_DIR}/Dockerfile -t ${REPO}:${VERSION} ./${IMAGE_DIR}
 
+.PHONY: push-hangzhou
+push-hangzhou:  ## push 镜像到上海
+	docker tag ${REPO}:${VERSION} registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION} && \
+	docker push registry.cn-hangzhou.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION}
+
 .PHONY: push-shanghai
 push-shanghai:  ## push 镜像到上海
 	docker tag ${REPO}:${VERSION} registry.cn-shanghai.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION} && \
 	docker push registry.cn-shanghai.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION}
 
+.PHONY: push-sg
+push-sg:  ## push 镜像到上海
+	docker tag ${REPO}:${VERSION} registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION} && \
+	docker push registry-vpc.ap-southeast-1.aliyuncs.com/${NAMESPACE}/${REPO}:${VERSION}
+
 .PHONY: push
-push: push-shanghai ## 推送到所有需要的地域
+push: push-shanghai push-hangzhou ## 推送到所有需要的地域
 
 .PHONY: dev
 dev: build  ## 本地启动测试
@@ -44,11 +55,11 @@ push-zip: ## 推送 zip
 	@$(shell cat .env) node ./scripts/upload.js "dist/facechain.zip" "facechain.zip"
 
 
-push-nas: ## 推送 nas 文件
+push-oss: ## 推送 oss 文件
 	export $(shell cat .env) && \
 	find ${CACHE_DIR} -type f | grep -E 'facechain/root|facechain/workspace' | grep -vE 'root/\.[^/]+$$' | sed 's@${CACHE_DIR}/@@g' > ${FILE_LIST} && \
-	cat ${FILE_LIST}  | xargs -I {} -P32 node ./scripts/upload.js "${CACHE_DIR}/{}" "{}" && \
-	node ./scripts/upload.js "${FILE_LIST}" "$(shell basename ${FILE_LIST})" && \
+	cat ${FILE_LIST}  | xargs -I {} -P32 node ./scripts/upload.js "${CACHE_DIR}/{}" "${OSS_PREFIX}/{}" && \
+	node ./scripts/upload.js "${FILE_LIST}" "${OSS_PREFIX}/$(shell basename ${FILE_LIST})" && \
 	echo done
 
 test-deploy: ## 直接执行 s deploy
