@@ -1,6 +1,6 @@
 edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
 name: fc-facechain-v3
-access: default
+access: '{{ access }}'
 vars:
   imageUrl: registry.{{region}}.aliyuncs.com/aliyun-fc/fc-facechain:v2
   region: "{{region}}"
@@ -8,7 +8,7 @@ vars:
 
 resources:
   facechain:
-    component: fc3@dev
+    component: fc3@0.0.21
     props:
       region: ${vars.region}
       functionName: "${vars.namespace}-server"
@@ -37,12 +37,12 @@ resources:
         TRANSFORMERS_OFFLINE: "1"
 
   initial:
-    component: fc3@dev
+    component: fc3@0.0.21
     actions: 
       success-deploy:
         # - component: fc3 invoke
         - run: |
-            s cli fc3 invoke --region ${this.props.region} --function-name ${this.props.functionName} --timeout 1200
+            s cli fc3 invoke --region ${this.props.region} --function-name ${this.props.functionName} --timeout 1200 -a {{ access }}
           path: ./
     props:
       region: ${vars.region}
