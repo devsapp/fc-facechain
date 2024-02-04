@@ -1,6 +1,22 @@
 #!/bin/sh
-REGION_SUFFIX=$(echo "$FC_REGION" | awk -F- '{print $2}')
-URL="https://sdmodel-${REGION_SUFFIX}.oss-${FC_REGION}-internal.aliyuncs.com"
+
+case $FC_REGION in
+    "cn-hangzhou"|"cn-shanghai")
+        REGION_SUFFIX=$(echo "$FC_REGION" | awk -F- '{print $2}')
+        URL="http://sdmodel-${REGION_SUFFIX}.oss-${FC_REGION}-internal.aliyuncs.com" 
+        ;;
+    "ap-southeast-1")
+        URL="http://sdmodel-xjp.oss-ap-southeast-1-internal.aliyuncs.com"
+        ;;
+    "ap-northeast-1")
+        URL="http://sdmodel-japan.oss-ap-southeast-1-internal.aliyuncs.com"
+        ;;
+    *)
+        echo "region ${FC_REGION} is not supported"
+        exit 1
+        ;;
+esac
+
 TARGET="/${NAS_ROOT}/facechain"
 VERSION=v2
 OSS_PREFIX=facechain/${VERSION}
