@@ -16,7 +16,7 @@
 
 <description>
 
-使用 serverless devs 将 facechain 部署到阿里云函数计算上
+通过 AI 打造个人数字形象，获得独属于自己的个人形象数字替身
 
 </description>
 
@@ -34,36 +34,28 @@
 
 ## 前期准备
 
-使用该项目，您需要有开通以下服务：
+使用该项目，您需要有开通以下服务并拥有对应权限：
 
 <service>
 
 
 
-| 服务 |  备注  |
-| --- |  --- |
-| 函数计算 FC |  提供 CPU、GPU 等计算资源。新用户请先领取 <a href="https://free.aliyun.com/?product=9555928&crowd=personal" target="_blank">试用资源包</a> |
-| 文件存储 NAS |  存储所需的大模型。新用户请先领取 <a href="https://free.aliyun.com/?product=1358&crowd=personal" target="_blank">试用资源包</a> |
+| 服务/业务 |  权限  | 相关文档 |
+| --- |  --- | --- |
+| 函数计算 |  创建函数 | [帮助文档](https://help.aliyun.com/product/2508973.html) [计费文档](https://help.aliyun.com/document_detail/2512928.html) |
+| 硬盘挂载 |  创建实例 | [帮助文档](https://help.aliyun.com/zh/nas) [计费文档](https://help.aliyun.com/zh/nas/product-overview/billing) |
 
 </service>
 
-推荐您拥有以下的产品权限 / 策略：
-<auth>
-</auth>
-
 <remark>
 
-您还需要注意：   
-- 部署大概需要 10min，训练大概需要 7min，出图大概需要 5 min，请耐心等待；
-- NAS 内置需要存储大概需要 64G 空间，可能会产生一定的费用；
-- 提供的训练图片、模型以及生成的图片均存储在您账号下的 NAS 中，请注意保护数据安全
+
 
 </remark>
 
 <disclaimers>
 
-免责声明：   
-应用来自于 Github 项目https://github.com/modelscope/facechain，仅对其在 Serverless 场景下部署进行适配
+
 
 </disclaimers>
 
@@ -84,35 +76,60 @@
    
 </deploy>
 
-## 应用详情
+## 案例介绍
 
 <appdetail id="flushContent">
 
-1. 本次实验涉及 函数计算（FC） 和 文件存储（NAS），未开通过对应云产品的用户可以前往 https://free.aliyun.com/  领取 3 个月试用资源包。
-2. 进入函数计算控制台 https://fcnext.console.aliyun.com/overview，点击 “应用”
-3. 在 “人工智能” 中搜索 “facechain”
-4. 部署类型选择 “直接部署”，请确保所需要的权限均已获取（缺失权限请按照引导进行操作）。操作完毕后点击 “创建并部署默认环境”
-5. 等待部署任务开始
-6. 部署需要加载 facechain 所需要的模型（约 64G），因此大概需要花费 10 分钟，请耐心等待。页面右侧可以看到当前部署进度及部署日志
-7. 部署完成后，您可以在当前页面看到您的应用地址
-8. 进入页面后可以阅读页面上的提示信息，避免后续操作出错
-9. 请先为需要训练的人物设置名字（每一组图片名字不能重复，训练失败时也需要换用新的名称）
-10. 上传图片请等待页面可以看到预览图片后再进行后续操作，否则可能会存在图片损坏影响训练
-11. 确保图片全部加载完成后，点击“开始训练”。训练速度取决于图片个数，一般 1～2 张图片的耗时在 5～10 分钟，请耐心等待
-12. 图片训练完成后，切换至 “无限风格形象写真” 或 “固定模板形象写真”
-13. 选择需要的基模型，控制大致风格
-14. 选择刚才训练的虚拟形象（如果找不到可以点击右侧的刷新按钮）
-15. 根据喜好选择期望的风格（建议选取同性别的风格）
-16. 如有特殊需求，可以展开 “高级选项”，修改提示词、通过 openpose 控制姿态等（初次使用不建议配置该内容）
-17. 点击“开始生成”。图片生成大概需要 3～5 分钟，请耐心等待
-18. 待图片生成完毕后，可以右键保存分享给朋友
+本案例将 [FaceChain](https://github.com/modelscope/facechain)，这一可以用来打造个人数字形象的深度学习模型工具，快速创建并部署到阿里云函数计算 FC。
+
+用户仅需要提供最低一张照片即可获得独属于自己的个人形象数字替身。FaceChain 支持在 gradio 的界面中使用模型训练和推理能力、支持资深开发者使用 python 脚本进行训练推理，也支持在 sd webui 中安装插件使用。 FaceChain的模型由ModelScope开源模型社区提供支持。
+
+FaceChain 目前已经收获超过 8K star，并且相关论文已收录于 CVPR 2024，是 AI 浪潮下里程碑式的项目。
+
+由于 FaceChain 需要通过 GPU 算力进行运算，且部署存在一定的门槛要求。因此借助于 Serverless 开发平台，用户可以简单、方便地将 FaceChain 部署至函数计算，快速感受 AIGC 的魅力。
 
 </appdetail>
 
-## 使用文档
+## 使用流程
 
 <usedetail id="flushContent">
+
+### 训练
+
+1. 进入页面后可以阅读页面上的提示信息，避免后续操作出错
+2. 请先为需要训练的人物设置名字（每一组图片名字不能重复，训练失败时也需要换用新的名称）
+3. 上传图片请等待页面可以看到预览图片后再进行后续操作，否则可能会存在图片损坏影响训练
+4. 确保图片全部加载完成后，点击“开始训练”。训练速度取决于图片个数，一般 1～2 张图片的耗时在 5～10 分钟，请耐心等待
+
+![](https://img.alicdn.com/imgextra/i4/O1CN01u6zfwb25NvNEE5Y8t_!!6000000007515-0-tps-750-551.jpg)
+
+### 出图
+
+1. 图片训练完成后，切换至 “无限风格形象写真” 或 “固定模板形象写真”
+2. 选择需要的基模型，控制大致风格  
+![](https://img.alicdn.com/imgextra/i1/O1CN01mnctDI1PWQrtuA5AE_!!6000000001848-0-tps-1265-175.jpg)
+3. 选择刚才训练的虚拟形象（如果找不到可以点击右侧的刷新按钮）  
+![](https://img.alicdn.com/imgextra/i4/O1CN01IM3C1r1n4XWggQmD7_!!6000000005036-0-tps-1497-128.jpg)
+4. 根据喜好选择期望的风格（建议选取同性别的风格）  
+![](https://img.alicdn.com/imgextra/i3/O1CN018908Mq1EAU7EXsBGC_!!6000000000311-0-tps-750-589.jpg)
+5. 如有特殊需求，可以展开 “高级选项”，修改提示词、通过 openpose 控制姿态等（初次使用不建议配置该内容）  
+![](https://img.alicdn.com/imgextra/i2/O1CN012sGhQH1J3DupDyEDe_!!6000000000972-0-tps-750-292.jpg)
+6. 点击“开始生成”。图片生成大概需要 3～5 分钟，请耐心等待  
+![](https://img.alicdn.com/imgextra/i3/O1CN01EIEWE81uptn9IBBpc_!!6000000006087-0-tps-750-243.jpg)
+7. 待图片生成完毕后，可以右键保存分享给朋友  
+![](https://img.alicdn.com/imgextra/i2/O1CN01gmJ9721JAYFir87n9_!!6000000000988-0-tps-750-428.jpg)
+
 </usedetail>
+
+## 注意事项
+
+<matters id="flushContent">
+
+- 该案例依赖于函数计算 FC 和文件存储 NAS 两款产品
+- 由于 FaceChain 使用依赖大量的模型（约 64GB），可能会产生每月几十元的费用，请注意资费情况
+- FaceChain 为开源项目，可以前往 [开源社区](https://github.com/modelscope/facechain) 进行进一步讨论
+
+</matters>
 
 
 <devgroup>
